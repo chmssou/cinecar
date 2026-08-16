@@ -88,13 +88,10 @@ export function CarCard({ car, locale }: CarCardProps) {
           {/* Minimal Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#04070C]/60 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-40" />
 
-          {/* Status & Stock Badge Overlay */}
+          {/* Status Badge Overlay */}
           <div className="absolute bottom-2.5 start-3 end-3 flex items-center justify-between z-10 font-label-caps text-[10px] tracking-wider uppercase">
             <span className={`font-semibold ${statusColorMap[salesStatus] || statusColorMap.available}`}>
               {statusTextMap[salesStatus] || dict.status.available}
-            </span>
-            <span className="text-white/40 font-mono text-[9px] lowercase">
-              #{stockNumber || "stock"}
             </span>
           </div>
         </div>
@@ -105,18 +102,22 @@ export function CarCard({ car, locale }: CarCardProps) {
             {displayTitle}
           </h3>
 
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2 flex-wrap">
             {showPrice && price ? (
-              <>
-                <span className="text-sm sm:text-base font-extrabold text-white tracking-tight" dir="ltr">
-                  {formatPrice(price, car.currency, locale)}
-                </span>
-                {oldPrice && oldPrice > price && (
-                  <span className="text-xs text-white/40 line-through" dir="ltr">
+              oldPrice && oldPrice > price ? (
+                <>
+                  <span className="text-xs font-mono text-red-500/80 line-through" dir="ltr">
                     {formatPrice(oldPrice, car.currency, locale)}
                   </span>
-                )}
-              </>
+                  <span className="text-base sm:text-lg font-extrabold text-emerald-400 tracking-tight font-display" dir="ltr">
+                    {formatPrice(price, car.currency, locale)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-base sm:text-lg font-extrabold text-brand-blue tracking-tight font-display" dir="ltr">
+                  {formatPrice(price, car.currency, locale)}
+                </span>
+              )
             ) : (
               <span className="font-label-caps text-xs font-semibold text-brand-blue uppercase tracking-wider">
                 {dict.status.contactForPrice}

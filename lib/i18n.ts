@@ -192,6 +192,11 @@ export const dictionaries = {
       viewCars: "عرض الإعلانات",
       contactUs: "تواصل معنا",
     },
+    showcase: {
+      title: "آخر الإضافات",
+      viewAll: "عرض جميع الإعلانات",
+      voirPlus: "عرض المزيد",
+    },
   },
   fr: {
     dir: "ltr",
@@ -380,6 +385,11 @@ export const dictionaries = {
       subtitle: "Découvrez nos annonces ou contactez directement CINECAR.",
       viewCars: "VOIR LES ANNONCES",
       contactUs: "NOUS CONTACTER",
+    },
+    showcase: {
+      title: "Dernières arrivées",
+      viewAll: "VOIR TOUTES LES ANNONCES",
+      voirPlus: "Voir plus",
     },
   },
 };

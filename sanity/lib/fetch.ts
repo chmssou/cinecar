@@ -138,15 +138,16 @@ export async function getCars(filters: FilterParams = {}) {
     params.maxMileage = Number(maxMileage);
   }
 
-  if (status && status !== "all") {
-    if (status === "available") {
-      conditions.push('(salesStatus == "available" || salesStatus == "AVAILABLE" || !defined(salesStatus))');
-    } else if (status === "not_available") {
-      conditions.push('(salesStatus == "not_available" || salesStatus == "NOT AVAILABLE" || salesStatus == "sold" || salesStatus == "reserved")');
-    } else {
-      conditions.push('(salesStatus == $status || lower(salesStatus) == lower($status))');
-      params.status = status;
-    }
+  if (status === "all") {
+    // Show all vehicles if user explicitly chooses 'all'
+  } else if (status === "not_available") {
+    conditions.push('(salesStatus == "not_available" || salesStatus == "NOT AVAILABLE" || salesStatus == "sold" || salesStatus == "reserved")');
+  } else if (status && status !== "available") {
+    conditions.push('(salesStatus == $status || lower(salesStatus) == lower($status))');
+    params.status = status;
+  } else {
+    // Default: Exclude unavailable vehicles from public catalog listing
+    conditions.push('(salesStatus == "available" || salesStatus == "AVAILABLE" || !defined(salesStatus))');
   }
 
   const filterString = conditions.join(" && ");
@@ -200,6 +201,35 @@ export async function getCarBySlug(slug: string) {
     tags: ["cars"],
     revalidate: 0,
   });
+}
+
+export async function getHomepageShowcaseData(limit = 6) {
+  const filterCondition = `_type == "car" && archived != true && !(_id in $testDuplicateIds) && (salesStatus == "available" || salesStatus == "AVAILABLE" || !defined(salesStatus))`;
+  const query = `{
+    "vehicles": *[${filterCondition}] | order(_createdAt desc)[0...${limit}] {
+      ${CAR_PROJECTION}
+    },
+    "totalAvailable": count(*[${filterCondition}])
+  }`;
+  const res = await sanityFetch<{ vehicles: any[]; totalAvailable: number }>({
+    query,
+    params: {
+      testDuplicateIds: [
+        "19a40590-1046-4463-af19-14b9da7a7e66",
+        "544ad89a-2019-43c6-8e75-00f3f02b96e9",
+        "8c9f04c6-5983-4a24-82bd-5855f8ef5eff",
+        "97b2b8cd-88e5-4a77-a79d-39466c96374a",
+        "e4cbd9a6-6f1f-4b36-adff-25ee189ea60e",
+        "e9f2c71c-c4a8-431c-9654-65d292c9d245",
+      ],
+    },
+    tags: ["cars"],
+    revalidate: 0,
+  });
+  return {
+    vehicles: res?.vehicles || [],
+    totalAvailable: res?.totalAvailable || 0,
+  };
 }
 
 export async function getLatestCars(limit = 6) {

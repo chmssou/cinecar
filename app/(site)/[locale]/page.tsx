@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getDictionary, Locale } from "@/lib/i18n";
-import { getLatestCars, getSiteSettings } from "@/sanity/lib/fetch";
+import { getHomepageShowcaseData, getSiteSettings } from "@/sanity/lib/fetch";
 import { LatestArrivalsShowcase } from "@/components/LatestArrivalsShowcase";
 import { HeroMedia } from "@/components/HeroMedia";
 import { urlFor } from "@/sanity/lib/image";
@@ -15,10 +15,13 @@ export default async function HomePage({
   const currentLocale = locale as Locale;
   const dict = getDictionary(currentLocale);
 
-  const [siteSettings, latestCars] = await Promise.all([
+  const [siteSettings, showcaseData] = await Promise.all([
     getSiteSettings(),
-    getLatestCars(9),
+    getHomepageShowcaseData(6),
   ]);
+
+  const latestCars = showcaseData?.vehicles || [];
+  const totalAvailableCount = showcaseData?.totalAvailable || 0;
 
   const whatsappNumber = siteSettings?.whatsappNumber || "+213550000000";
   const primaryPhone = siteSettings?.phoneNumbers?.[0] || "+213 550 12 34 56";
@@ -102,8 +105,12 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* 2. LATEST ARRIVALS SHOWCASE WITH PROGRESSIVE REVEAL */}
-      <LatestArrivalsShowcase cars={latestCars} locale={currentLocale} />
+      {/* 2. LATEST ARRIVALS SHOWCASE WITH CONDITIONAL VOIR PLUS */}
+      <LatestArrivalsShowcase
+        cars={latestCars}
+        totalAvailableCount={totalAvailableCount}
+        locale={currentLocale}
+      />
 
       {/* 3. MINIMAL RESTRAINED EDITORIAL CTA SECTION */}
       <section id="contact" className="w-full scroll-mt-24 py-16 sm:py-24 bg-[#05080D] border-t border-white/5 relative overflow-hidden">

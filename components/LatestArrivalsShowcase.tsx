@@ -1,39 +1,37 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { CarCard } from "@/components/CarCard";
-import { Locale } from "@/lib/i18n";
+import { getDictionary, Locale } from "@/lib/i18n";
 
 interface LatestArrivalsShowcaseProps {
   cars: any[];
+  totalAvailableCount?: number;
   locale: Locale;
 }
 
-export function LatestArrivalsShowcase({ cars, locale }: LatestArrivalsShowcaseProps) {
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [loading, setLoading] = useState(false);
+export function LatestArrivalsShowcase({
+  cars,
+  totalAvailableCount,
+  locale,
+}: LatestArrivalsShowcaseProps) {
+  const dict = getDictionary(locale);
 
   const isRtl = locale === "ar";
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
-  const sectionTitle = locale === "ar" ? "آخر الإضافات" : "DERNIÈRES ARRIVÉES";
-  const topLinkText = locale === "ar" ? "عرض جميع الإعلانات" : "VOIR TOUTES LES ANNONCES";
-  const showMoreText = locale === "ar" ? "عرض المزيد" : "VOIR PLUS";
+  const sectionTitle = (dict as any).showcase?.title || (locale === "ar" ? "آخر الإضافات" : "Dernières arrivées");
+  const topLinkText = (dict as any).showcase?.viewAll || (locale === "ar" ? "عرض جميع الإعلانات" : "VOIR TOUTES LES ANNONCES");
+  const voirPlusText = (dict as any).showcase?.voirPlus || (locale === "ar" ? "عرض المزيد" : "Voir plus");
 
-  // Maximum vehicles allowed on the Homepage section is 9
-  const maxCars = Math.min(cars.length, 9);
-  const visibleCars = cars.slice(0, visibleCount);
-  const hasMore = visibleCount < maxCars;
+  // Show maximum 6 available vehicles
+  const displayedCars = cars.slice(0, 6);
 
-  const handleShowMore = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + 3, maxCars));
-      setLoading(false);
-    }, 150);
-  };
+  // Requirement 3: VOIR PLUS is ONLY rendered if totalAvailableCount >= 7
+  // Fallback to cars.length if totalAvailableCount is not provided
+  const availableCount = totalAvailableCount !== undefined ? totalAvailableCount : cars.length;
+  const showVoirPlus = availableCount >= 7;
 
   return (
     <section className="relative mx-auto max-w-container px-gutter w-full pt-16 pb-20 sm:pt-24 sm:pb-28">
@@ -53,10 +51,10 @@ export function LatestArrivalsShowcase({ cars, locale }: LatestArrivalsShowcaseP
         </Link>
       </div>
 
-      {/* Grid of Vehicle Cards with Progressive Stagger Reveal */}
-      {visibleCars.length > 0 ? (
+      {/* Grid of 6 Available Vehicle Cards */}
+      {displayedCars.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleCars.map((car, index) => (
+          {displayedCars.map((car, index) => (
             <div
               key={car._id}
               className="animate-fade-in-up"
@@ -74,24 +72,16 @@ export function LatestArrivalsShowcase({ cars, locale }: LatestArrivalsShowcaseP
         </div>
       )}
 
-      {/* Progressive Reveal "VOIR PLUS" Button */}
-      {hasMore && (
+      {/* Direct Navigation "VOIR PLUS" / "عرض المزيد" Link — ONLY rendered if total available count >= 7 */}
+      {showVoirPlus && (
         <div className="mt-14 flex justify-center">
-          <button
-            type="button"
-            onClick={handleShowMore}
-            disabled={loading}
-            className="inline-flex items-center gap-2 font-label-caps text-xs text-white hover:text-brand-blue transition-colors uppercase tracking-widest border-b border-white/20 hover:border-brand-blue pb-1 group cursor-pointer disabled:opacity-50 font-semibold"
+          <Link
+            href={`/${locale}/cars`}
+            className="inline-flex items-center gap-2 font-label-caps text-xs text-white hover:text-brand-blue transition-colors uppercase tracking-widest border-b border-white/20 hover:border-brand-blue pb-1 group font-semibold"
           >
-            {loading ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-brand-blue" />
-            ) : (
-              <>
-                <span>{showMoreText}</span>
-                <ArrowIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-              </>
-            )}
-          </button>
+            <span>{voirPlusText}</span>
+            <ArrowIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+          </Link>
         </div>
       )}
     </section>

@@ -124,14 +124,23 @@ export const car = defineType({
       description: "Ex: 1.2 VTi 72 CH, 2.0 TDI 150 CH, 4.0L V8 (Optionnel)",
     }),
 
-    // 10. Price
+    // 10. Current Price
     defineField({
       name: "price",
-      title: "Price (Prix de Vente en DZD)",
+      title: "Prix actuel (Prix de Vente en DZD)",
       type: "number",
       description: "Ex: 2900000 (enter number only)",
       validation: (Rule) =>
-        Rule.required().min(0).error("Price is required (e.g. 2900000)"),
+        Rule.required().min(0).error("Prix actuel est requis (ex: 2900000)"),
+    }),
+
+    // 10b. Old Price (Optional)
+    defineField({
+      name: "oldPrice",
+      title: "Ancien prix (optionnel)",
+      type: "number",
+      description: "Ex: 3200000 (Ancien prix barré en rouge si le véhicule bénéficie d'une réduction)",
+      validation: (Rule) => Rule.min(0).error("L'ancien prix ne peut pas être négatif"),
     }),
 
     // 11. Status

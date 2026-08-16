@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, X } from "lucide-react";
 import { Locale } from "@/lib/i18n";
 import { getSocialLinks } from "@/lib/social";
 import { trackEvent } from "@/lib/analytics";
@@ -42,6 +42,8 @@ function TikTokIcon({ className = "h-4 w-4" }: { className?: string }) {
 export function GlobalControls({ locale, siteSettings }: GlobalControlsProps) {
   const pathname = usePathname();
   const links = getSocialLinks(siteSettings);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Sync document level lang and dir attributes dynamically
   useEffect(() => {
@@ -51,70 +53,123 @@ export function GlobalControls({ locale, siteSettings }: GlobalControlsProps) {
     }
   }, [locale]);
 
+  // Handle click outside to collapse on mobile / tap
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const isVehicleDetailPage =
     pathname.includes("/cars/") && pathname.split("/").filter(Boolean).length >= 3;
 
+  const isRtl = locale === "ar";
+  const ariaLabel = isRtl
+    ? isOpen ? "إغلاق خيارات التواصل" : "فتح خيارات التواصل"
+    : isOpen ? "Fermer les options de contact" : "Ouvrir les options de contact";
+
   return (
-    <>
-      {/* REFINED DESKTOP BOTTOM SOCIAL DOCK (Hidden on Mobile) */}
+    <div
+      className={`fixed bottom-4 sm:bottom-6 z-40 pointer-events-none ${
+        isRtl ? "right-4 sm:right-6 2xl:right-12" : "left-4 sm:left-6 2xl:left-12"
+      } ${isVehicleDetailPage ? "opacity-95" : "opacity-100"}`}
+    >
       <div
-        className={`fixed bottom-6 z-40 hidden md:flex ${
-          locale === "ar" ? "right-6" : "left-6"
-        } ${isVehicleDetailPage ? "opacity-90" : "opacity-100"}`}
+        ref={containerRef}
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        className="pointer-events-auto relative flex items-center"
       >
-        <div className="flex items-center gap-3 rounded-full border border-white/15 bg-[#09111C]/90 px-4 py-2 shadow-2xl backdrop-blur-md transition-all hover:border-white/30 hover:bg-[#0D1624]">
-          {/* Primary WhatsApp Action */}
-          <a
-            href={links.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackEvent("whatsapp_click", { source: "desktop_dock" })}
-            className="flex items-center gap-2 text-xs font-bold tracking-wider text-white transition-colors hover:text-brand-blue"
-            aria-label="WhatsApp Contact"
+        {/* Floating Bubble Pill Container */}
+        <div
+          className={`flex items-center rounded-full border border-white/15 bg-[#09111C]/95 shadow-2xl backdrop-blur-md transition-all duration-300 ease-out hover:border-brand-blue/50 ${
+            isOpen
+              ? "px-3.5 py-2 bg-[#0D1624]"
+              : "p-0 h-11 w-11 sm:h-12 sm:w-12 justify-center"
+          }`}
+        >
+          {/* Main Trigger Button */}
+          <button
+            type="button"
+            onClick={() => setIsOpen((prev) => !prev)}
+            aria-label={ariaLabel}
+            aria-expanded={isOpen}
+            className={`flex items-center justify-center shrink-0 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded-full ${
+              isOpen ? "me-2.5 opacity-80 hover:opacity-100" : "h-full w-full"
+            }`}
           >
-            <MessageSquare className="h-3.5 w-3.5 text-brand-blue" strokeWidth={2} />
-            <span className="font-label-caps text-[11px] uppercase">WhatsApp</span>
-          </a>
+            {isOpen ? (
+              <X className="h-4 w-4 text-white/70 hover:text-white" />
+            ) : (
+              <MessageSquare className="h-5 w-5 text-brand-blue" strokeWidth={2} />
+            )}
+          </button>
 
-          <span className="h-3.5 w-[1px] bg-white/15" />
-
-          {/* Social Platforms Cluster */}
-          <div className="flex items-center gap-2.5">
+          {/* Expanded Links Cluster */}
+          <div
+            className={`flex items-center transition-all duration-300 ease-out overflow-hidden ${
+              isOpen
+                ? "opacity-100 max-w-[280px] pointer-events-auto"
+                : "opacity-0 max-w-0 pointer-events-none"
+            }`}
+          >
+            {/* Primary WhatsApp Action */}
             <a
-              href={links.instagram}
+              href={links.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackEvent("social_click", { platform: "instagram", source: "desktop_dock" })}
-              className="p-1 text-white/70 transition-colors hover:text-white"
-              aria-label="Instagram"
+              onClick={() => trackEvent("whatsapp_click", { source: "floating_bubble" })}
+              className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-white transition-colors hover:text-brand-blue whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded"
+              aria-label="WhatsApp Contact"
             >
-              <InstagramIcon className="h-4 w-4" />
+              <MessageSquare className="h-3.5 w-3.5 text-brand-blue shrink-0" strokeWidth={2} />
+              <span className="font-label-caps text-[11px] uppercase">WhatsApp</span>
             </a>
 
-            <a
-              href={links.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("social_click", { platform: "facebook", source: "desktop_dock" })}
-              className="p-1 text-white/70 transition-colors hover:text-white"
-              aria-label="Facebook"
-            >
-              <FacebookIcon className="h-4 w-4" />
-            </a>
+            <span className="h-3.5 w-[1px] bg-white/15 mx-2.5 shrink-0" />
 
-            <a
-              href={links.tiktok}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("social_click", { platform: "tiktok", source: "desktop_dock" })}
-              className="p-1 text-white/70 transition-colors hover:text-white"
-              aria-label="TikTok"
-            >
-              <TikTokIcon className="h-4 w-4" />
-            </a>
+            {/* Social Platforms Cluster */}
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={links.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("social_click", { platform: "instagram", source: "floating_bubble" })}
+                className="p-1 text-white/70 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded"
+                aria-label="Instagram"
+              >
+                <InstagramIcon className="h-4 w-4" />
+              </a>
+
+              <a
+                href={links.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("social_click", { platform: "facebook", source: "floating_bubble" })}
+                className="p-1 text-white/70 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded"
+                aria-label="Facebook"
+              >
+                <FacebookIcon className="h-4 w-4" />
+              </a>
+
+              <a
+                href={links.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("social_click", { platform: "tiktok", source: "floating_bubble" })}
+                className="p-1 text-white/70 transition-colors hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue rounded"
+                aria-label="TikTok"
+              >
+                <TikTokIcon className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

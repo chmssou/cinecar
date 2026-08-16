@@ -25,6 +25,17 @@ import {
   Check,
   ChevronRight,
   ChevronLeft,
+  Calendar,
+  Gauge,
+  Fuel,
+  Cog,
+  Car,
+  ShieldCheck,
+  Zap,
+  Paintbrush,
+  Globe,
+  FileText,
+  Users,
 } from "lucide-react";
 
 export async function generateMetadata({
@@ -120,13 +131,18 @@ export default async function CarDetailPage({
     ? (dict.transmissionTypes as any)[car.transmission] || car.transmission
     : null;
 
-  const specParts = [
+  const modelTrim = car.model?.name
+    ? `${car.model.name}${car.trim ? ` ${car.trim}` : ""}`
+    : car.trim || null;
+
+  const headerSublineParts = [
+    car.brand?.name,
+    modelTrim,
     car.year ? `${car.year}` : null,
-    car.mileage !== undefined && car.mileage !== null ? `${formatNumber(car.mileage)} KM` : null,
-    transmissionText ? `${transmissionText}` : null,
+    car.mileage !== undefined && car.mileage !== null ? `${formatNumber(car.mileage)} km` : null,
   ].filter(Boolean);
 
-  const secondarySpecLine = specParts.join(" · ");
+  const headerSubline = headerSublineParts.join(" · ");
 
   const statusTextMap: Record<string, string> = {
     available: dict.status.available,
@@ -143,7 +159,7 @@ export default async function CarDetailPage({
   };
 
   // Full Specifications List
-  const specItems = [
+  const rawSpecItems = [
     { label: dict.specs.brand, value: car.brand?.name },
     { label: dict.specs.model, value: car.model?.name },
     { label: dict.specs.trim, value: car.trim },
@@ -181,6 +197,48 @@ export default async function CarDetailPage({
     { label: dict.specs.origin, value: car.origin },
     { label: dict.specs.registration, value: car.registration },
   ].filter((item) => item.value !== undefined && item.value !== null && item.value !== "");
+
+  const getSpecIcon = (label: string) => {
+    if (label === dict.specs.brand || label === dict.specs.doors) {
+      return <Car className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.model || label === dict.specs.condition) {
+      return <ShieldCheck className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.trim || label === dict.specs.power) {
+      return <Zap className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.year) {
+      return <Calendar className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.mileage || label === dict.specs.engineCapacity) {
+      return <Gauge className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.fuel) {
+      return <Fuel className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.transmission) {
+      return <Cog className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.exteriorColor || label === dict.specs.interiorColor) {
+      return <Paintbrush className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.seats) {
+      return <Users className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.origin) {
+      return <Globe className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    if (label === dict.specs.registration) {
+      return <FileText className="h-3.5 w-3.5 text-brand-blue/70 shrink-0" />;
+    }
+    return null;
+  };
+
+  const specItems = rawSpecItems.map((spec) => ({
+    ...spec,
+    icon: getSpecIcon(spec.label),
+  }));
 
   // Structured Data
   const jsonLdVehicle = {
@@ -236,7 +294,7 @@ export default async function CarDetailPage({
 
       {/* Vehicle Identity Header (Full Width Editorial) */}
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/10 pb-8 min-w-0 overflow-hidden">
-        <div className="space-y-2 min-w-0">
+        <div className="space-y-1.5 min-w-0">
           {/* Brand Label */}
           <span className="font-label-caps text-xs font-bold uppercase tracking-[0.25em] text-brand-blue block">
             {brandName}
@@ -246,41 +304,48 @@ export default async function CarDetailPage({
           <h1 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display uppercase tracking-tight break-words min-w-0">
             <span dir="auto">{car.displayTitle}</span>
           </h1>
+
+          {/* Understated Secondary Metadata Subline: Brand · Model/Trim · Year · Mileage */}
+          {headerSubline && (
+            <p className="font-label-caps text-xs text-white/50 tracking-wider uppercase font-medium pt-0.5">
+              {headerSubline}
+            </p>
+          )}
         </div>
 
         {/* Pricing & Status Block */}
-        <div className="flex flex-col sm:items-end space-y-1 min-w-0 shrink-0">
+        <div className="flex flex-col sm:items-end space-y-1.5 min-w-0 shrink-0">
           {car.showPrice && car.price ? (
-            <>
-              {car.oldPrice && car.oldPrice > car.price && (
-                <span className="font-mono text-xs text-white/40 line-through" dir="ltr">
+            car.oldPrice && car.oldPrice > car.price ? (
+              <div className="flex flex-col sm:items-end gap-0.5">
+                <span className="font-mono text-xs sm:text-sm text-red-500/80 line-through" dir="ltr">
                   {formatPrice(car.oldPrice, car.currency, currentLocale)}
                 </span>
-              )}
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight font-display whitespace-nowrap" dir="ltr">
+                <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-emerald-400 tracking-tight font-display whitespace-nowrap leading-none" dir="ltr">
+                  {formatPrice(car.price, car.currency, currentLocale)}
+                </span>
+              </div>
+            ) : (
+              <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-blue tracking-tight font-display whitespace-nowrap leading-none" dir="ltr">
                 {formatPrice(car.price, car.currency, currentLocale)}
               </span>
-            </>
+            )
           ) : (
             <span className="font-label-caps text-sm font-bold text-brand-blue uppercase tracking-widest">
               {dict.status.contactForPrice}
             </span>
           )}
 
-          <div className="flex items-center gap-2 font-label-caps text-[11px] uppercase tracking-wider pt-1">
+          <div className="flex items-center gap-2 font-label-caps text-xs uppercase tracking-wider pt-1">
             <span className={`font-semibold ${statusColorMap[car.salesStatus] || statusColorMap.available}`}>
               {statusTextMap[car.salesStatus] || dict.status.available}
-            </span>
-            <span className="text-white/20">•</span>
-            <span className="text-white/50 font-mono text-[10px]">
-              #{car.stockNumber || "STOCK"}
             </span>
           </div>
         </div>
       </header>
 
-      {/* Main Vehicle Showcase Centerpiece */}
-      <div className="space-y-10 sm:space-y-12 min-w-0">
+      {/* Main Vehicle Showcase Centerpiece with Increased Visual Separation */}
+      <div className="space-y-14 sm:space-y-16 lg:space-y-20 min-w-0">
         {/* Large Hero Gallery */}
         <section aria-label="Vehicle Gallery" className="min-w-0">
           <Gallery images={car.images} displayTitle={car.displayTitle} locale={currentLocale} />
@@ -288,7 +353,7 @@ export default async function CarDetailPage({
 
         {/* Editorial Description */}
         {descriptionText && (
-          <section className="max-w-3xl space-y-3 min-w-0">
+          <section className="max-w-3xl space-y-3 min-w-0 pt-8 sm:pt-10 border-t border-white/10">
             <h2 className="font-label-caps text-xs font-bold text-brand-blue uppercase tracking-[0.2em]">
               {dict.details.description}
             </h2>
@@ -299,7 +364,7 @@ export default async function CarDetailPage({
         )}
 
         {/* Full Specifications Section (Authoritative Detailed Area) */}
-        <section className="space-y-6 pt-4 border-t border-white/10 min-w-0">
+        <section className="space-y-6 pt-8 sm:pt-10 border-t border-white/10 min-w-0">
           <h2 className="font-label-caps text-xs font-bold text-white uppercase tracking-[0.2em]">
             {dict.details.keySpecs}
           </h2>
@@ -310,7 +375,10 @@ export default async function CarDetailPage({
                 key={i}
                 className="flex items-center justify-between border-b border-white/5 py-3 font-label-caps text-xs gap-3 min-w-0"
               >
-                <span className="text-white/50 uppercase tracking-wider shrink-0">{spec.label}</span>
+                <div className="flex items-center gap-2 text-white/50 uppercase tracking-wider shrink-0 min-w-0">
+                  {spec.icon}
+                  <span className="truncate">{spec.label}</span>
+                </div>
                 <span className="font-bold text-white uppercase tracking-wide text-end break-words min-w-0">{spec.value}</span>
               </div>
             ))}
