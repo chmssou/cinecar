@@ -210,7 +210,7 @@ export default async function CarDetailPage({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-gutter pt-24 pb-24 sm:pb-28">
+    <div className="w-full min-w-0 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-32 md:pb-24 overflow-x-hidden">
       {/* Inject Structured Data */}
       <script
         type="application/ld+json"
@@ -218,38 +218,38 @@ export default async function CarDetailPage({
       />
 
       {/* Breadcrumbs Navigation */}
-      <nav className="mb-6 flex items-center justify-between border-b border-white/5 pb-4">
-        <div className="flex items-center gap-2 font-label-caps text-[11px] uppercase tracking-wider text-white/50">
+      <nav className="mb-6 flex flex-wrap items-center justify-between border-b border-white/5 pb-4 gap-2 min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 font-label-caps text-[11px] uppercase tracking-wider text-white/50 min-w-0">
           <Link href={`/${currentLocale}`} className="hover:text-white transition-colors">
             {dict.nav.home}
           </Link>
-          <ChevronIcon className="h-3.5 w-3.5" />
+          <ChevronIcon className="h-3.5 w-3.5 shrink-0" />
           <Link href={`/${currentLocale}/cars`} className="hover:text-white transition-colors">
             {dict.nav.cars}
           </Link>
-          <ChevronIcon className="h-3.5 w-3.5" />
-          <span className="text-white font-semibold truncate max-w-xs sm:max-w-md">
+          <ChevronIcon className="h-3.5 w-3.5 shrink-0" />
+          <span className="text-white font-semibold truncate max-w-[140px] xs:max-w-[200px] sm:max-w-md min-w-0">
             {car.displayTitle}
           </span>
         </div>
       </nav>
 
       {/* Vehicle Identity Header (Full Width Editorial) */}
-      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/10 pb-8">
-        <div className="space-y-2">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-white/10 pb-8 min-w-0 overflow-hidden">
+        <div className="space-y-2 min-w-0">
           {/* Brand Label */}
           <span className="font-label-caps text-xs font-bold uppercase tracking-[0.25em] text-brand-blue block">
             {brandName}
           </span>
 
           {/* Vehicle Name */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display uppercase tracking-tight">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-display uppercase tracking-tight break-words min-w-0">
             <span dir="auto">{car.displayTitle}</span>
           </h1>
         </div>
 
         {/* Pricing & Status Block */}
-        <div className="flex flex-col sm:items-end space-y-1">
+        <div className="flex flex-col sm:items-end space-y-1 min-w-0 shrink-0">
           {car.showPrice && car.price ? (
             <>
               {car.oldPrice && car.oldPrice > car.price && (
@@ -257,7 +257,7 @@ export default async function CarDetailPage({
                   {formatPrice(car.oldPrice, car.currency, currentLocale)}
                 </span>
               )}
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight font-display" dir="ltr">
+              <span className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight font-display whitespace-nowrap" dir="ltr">
                 {formatPrice(car.price, car.currency, currentLocale)}
               </span>
             </>
@@ -280,77 +280,38 @@ export default async function CarDetailPage({
       </header>
 
       {/* Main Vehicle Showcase Centerpiece */}
-      <div className="space-y-12">
+      <div className="space-y-10 sm:space-y-12 min-w-0">
         {/* Large Hero Gallery */}
-        <section aria-label="Vehicle Gallery">
+        <section aria-label="Vehicle Gallery" className="min-w-0">
           <Gallery images={car.images} displayTitle={car.displayTitle} locale={currentLocale} />
-        </section>
-
-        {/* Key Specification Strip (4 Equal Columns with Thin Vertical Separators) */}
-        <section className="grid grid-cols-2 gap-y-6 gap-x-4 sm:grid-cols-4 border-y border-white/10 py-6">
-          <div className="space-y-1 sm:pe-4 sm:border-e border-white/10">
-            <span className="block font-label-caps text-[10px] uppercase tracking-widest text-white/50">
-              {dict.specs.year}
-            </span>
-            <span className="text-base sm:text-lg font-bold text-white uppercase font-display">
-              {car.year || "-"}
-            </span>
-          </div>
-
-          <div className="space-y-1 sm:px-4 sm:border-e border-white/10">
-            <span className="block font-label-caps text-[10px] uppercase tracking-widest text-white/50">
-              {dict.specs.mileage}
-            </span>
-            <span className="text-base sm:text-lg font-bold text-white uppercase font-display">
-              {car.mileage !== undefined ? `${formatNumber(car.mileage)} km` : "-"}
-            </span>
-          </div>
-
-          <div className="space-y-1 sm:px-4 sm:border-e border-white/10">
-            <span className="block font-label-caps text-[10px] uppercase tracking-widest text-white/50">
-              {dict.specs.fuel}
-            </span>
-            <span className="text-base sm:text-lg font-bold text-white uppercase font-display truncate block">
-              {fuelText || "-"}
-            </span>
-          </div>
-
-          <div className="space-y-1 sm:ps-4">
-            <span className="block font-label-caps text-[10px] uppercase tracking-widest text-white/50">
-              {dict.specs.transmission}
-            </span>
-            <span className="text-base sm:text-lg font-bold text-white uppercase font-display truncate block">
-              {transmissionText || "-"}
-            </span>
-          </div>
         </section>
 
         {/* Editorial Description */}
         {descriptionText && (
-          <section className="max-w-3xl space-y-3">
+          <section className="max-w-3xl space-y-3 min-w-0">
             <h2 className="font-label-caps text-xs font-bold text-brand-blue uppercase tracking-[0.2em]">
               {dict.details.description}
             </h2>
-            <p className="text-sm sm:text-base text-white/80 leading-relaxed whitespace-pre-line font-sans">
+            <p className="text-sm sm:text-base text-white/80 leading-relaxed whitespace-pre-line font-sans break-words">
               {descriptionText}
             </p>
           </section>
         )}
 
-        {/* Full Specifications Section */}
-        <section className="space-y-6 pt-4 border-t border-white/10">
+        {/* Full Specifications Section (Authoritative Detailed Area) */}
+        <section className="space-y-6 pt-4 border-t border-white/10 min-w-0">
           <h2 className="font-label-caps text-xs font-bold text-white uppercase tracking-[0.2em]">
             {dict.details.keySpecs}
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-12 gap-y-1 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-x-12 gap-y-1 sm:grid-cols-2 min-w-0">
             {specItems.map((spec, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between border-b border-white/5 py-3 font-label-caps text-xs"
+                className="flex items-center justify-between border-b border-white/5 py-3 font-label-caps text-xs gap-3 min-w-0"
               >
-                <span className="text-white/50 uppercase tracking-wider">{spec.label}</span>
-                <span className="font-bold text-white uppercase tracking-wide">{spec.value}</span>
+                <span className="text-white/50 uppercase tracking-wider shrink-0">{spec.label}</span>
+                <span className="font-bold text-white uppercase tracking-wide text-end break-words min-w-0">{spec.value}</span>
               </div>
             ))}
           </div>

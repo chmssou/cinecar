@@ -82,24 +82,24 @@ export function Gallery({ images, displayTitle, locale = "fr" }: GalleryProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Main Image Viewport (16:9) */}
-      <div className="relative aspect-16/9 w-full overflow-hidden rounded-xl bg-[#05080D] border border-white/10 group">
+      {/* Main Image Viewport */}
+      <div className="relative aspect-16/9 sm:aspect-16/10 w-full overflow-hidden rounded-xl bg-[#05080D] border border-white/10 group">
         <div className="h-full overflow-hidden" ref={mainEmblaRef}>
           <div className="flex h-full">
             {images.map((img, idx) => {
-              const imageUrl = urlFor(img).width(1600).height(1000).quality(92).url();
+              const imageUrl = urlFor(img).width(1600).quality(92).url();
               return (
                 <div
                   key={img._key || idx}
-                  className="relative h-full w-full flex-none min-w-0"
+                  className="relative h-full w-full flex-none min-w-0 bg-[#05080D] flex items-center justify-center"
                 >
                   <Image
                     src={imageUrl}
                     alt={img.alt || `${displayTitle} - ${idx + 1}`}
                     fill
                     priority={idx === 0}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 1000px"
-                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 85vw, 1200px"
+                    className="object-contain"
                   />
                 </div>
               );

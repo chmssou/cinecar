@@ -116,6 +116,14 @@ export const car = defineType({
       },
     }),
 
+    // 9b. Engine / Motor
+    defineField({
+      name: "engine",
+      title: "Engine / Motor (Moteur)",
+      type: "string",
+      description: "Ex: 1.2 VTi 72 CH, 2.0 TDI 150 CH, 4.0L V8 (Optionnel)",
+    }),
+
     // 10. Price
     defineField({
       name: "price",
