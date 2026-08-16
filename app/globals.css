@@ -1,0 +1,348 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-barlow-condensed: "Barlow Condensed", sans-serif;
+  --font-manrope: "Manrope", sans-serif;
+  --font-noto-kufi: "Noto Kufi Arabic", sans-serif;
+  --font-ibm-plex: "IBM Plex Sans Arabic", sans-serif;
+  --font-noto-sans-arabic: "Noto Sans Arabic", sans-serif;
+
+  /* Automotive Motion System Tokens */
+  --motion-fast: 180ms;
+  --motion-normal: 320ms;
+  --motion-slow: 550ms;
+  --motion-hero: 1200ms;
+  --ease-automotive: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+  background-color: #05080D;
+  color: #E0E3E6;
+  font-family: var(--font-manrope), var(--font-noto-sans-arabic), var(--font-ibm-plex), sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ==========================================================================
+   ARABIC TYPOGRAPHY, SHAPING & NO-TRANSLATION OVERRIDES
+   ========================================================================== */
+
+/* 1. Prevent artificial letter-spacing / tracking from breaking cursive Arabic letter joining */
+html[dir="rtl"],
+html[lang="ar"],
+[dir="rtl"],
+[dir="rtl"] *,
+[lang="ar"],
+[lang="ar"] *,
+.font-cairo,
+.font-cairo * {
+  letter-spacing: normal !important;
+}
+
+/* 2. Arabic Font Family & Ligature Integrity */
+[dir="rtl"],
+[lang="ar"],
+.font-cairo {
+  font-family: var(--font-noto-sans-arabic), var(--font-noto-kufi), var(--font-ibm-plex), sans-serif;
+  font-feature-settings: normal !important;
+  font-variant-ligatures: normal !important;
+  text-rendering: optimizeLegibility;
+}
+
+/* 3. Headings in RTL Mode */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+[dir="rtl"] .font-display,
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] h5,
+[lang="ar"] h6,
+[lang="ar"] .font-display {
+  font-family: var(--font-noto-kufi), var(--font-noto-sans-arabic), sans-serif !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #05080D;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #191C1E;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #126BFF;
+}
+
+/* Micro Typography Rules */
+.font-label-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  font-family: var(--font-manrope), var(--font-ibm-plex), sans-serif;
+}
+
+html[dir="rtl"] .font-label-caps,
+[dir="rtl"] .font-label-caps {
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  font-family: var(--font-noto-sans-arabic), var(--font-ibm-plex), sans-serif !important;
+}
+
+.text-label-caps {
+  font-size: 0.7rem;
+  line-height: 1rem;
+}
+
+/* Section Title Typography */
+.text-section-title {
+  font-family: var(--font-barlow-condensed), var(--font-noto-kufi), sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+html[dir="rtl"] .text-section-title,
+[dir="rtl"] .text-section-title {
+  letter-spacing: normal !important;
+  font-family: var(--font-noto-kufi), sans-serif !important;
+  text-transform: none !important;
+}
+
+/* Editorial Surface Panels */
+.stitch-panel {
+  background: #09111C;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+.stitch-card {
+  background: #070C14;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  transition: border-color var(--motion-normal) var(--ease-automotive), transform var(--motion-normal) var(--ease-automotive);
+}
+
+.stitch-card:hover {
+  border-color: rgba(18, 107, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Buttons */
+.btn-stitch-primary {
+  background-color: #126BFF;
+  color: #FFFFFF;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background-color var(--motion-fast) var(--ease-automotive), transform var(--motion-fast) var(--ease-automotive);
+}
+
+html[dir="rtl"] .btn-stitch-primary,
+[dir="rtl"] .btn-stitch-primary {
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+.btn-stitch-primary:hover {
+  background-color: #2F80FF;
+}
+
+.btn-stitch-secondary {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #E0E3E6;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background-color var(--motion-fast) var(--ease-automotive), border-color var(--motion-fast) var(--ease-automotive);
+}
+
+html[dir="rtl"] .btn-stitch-secondary,
+[dir="rtl"] .btn-stitch-secondary {
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+.btn-stitch-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Keyframes for Hero Entrance & Zoom */
+@keyframes heroZoomIn {
+  0% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-zoom {
+  animation: heroZoomIn var(--motion-hero) var(--ease-automotive) forwards;
+}
+
+.animate-hero-fade-1 {
+  animation: heroFadeUp var(--motion-slow) var(--ease-automotive) 100ms forwards;
+}
+
+.animate-hero-fade-2 {
+  animation: heroFadeUp var(--motion-slow) var(--ease-automotive) 220ms forwards;
+}
+
+.animate-hero-fade-3 {
+  animation: heroFadeUp var(--motion-slow) var(--ease-automotive) 340ms forwards;
+}
+
+.animate-hero-fade-4 {
+  animation: heroFadeUp var(--motion-slow) var(--ease-automotive) 460ms forwards;
+}
+
+/* Mobile Drawer Keyframe Animations */
+@keyframes drawerSlideLtr {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerSlideRtl {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-drawer-slide-ltr {
+  animation: drawerSlideLtr 300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-drawer-slide-rtl {
+  animation: drawerSlideRtl 300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-backdrop-fade {
+  animation: backdropFadeIn 250ms ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 400ms var(--ease-automotive, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+/* Branded Loading Accent Animation */
+@keyframes lineExpand {
+  0% {
+    transform: scaleX(0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scaleX(0.7);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0.7;
+  }
+}
+
+.animate-line-expand {
+  animation: lineExpand 1.2s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+  transform-origin: center;
+}
+
+/* Page Route Transition Animation */
+@keyframes pageEnter {
+  0% {
+    opacity: 0.88;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-enter {
+  animation: pageEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom Focus Ring */
+*:focus-visible {
+  outline: 2px solid #126BFF;
+  outline-offset: 2px;
+}
+
+/* Accessibility / Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-hero-zoom {
+    transform: scale(1) !important;
+    animation: none !important;
+  }
+  .animate-drawer-slide-ltr,
+  .animate-drawer-slide-rtl {
+    animation: none !important;
+  }
+}
